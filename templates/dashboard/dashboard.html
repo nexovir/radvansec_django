@@ -1,0 +1,59 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard | RadvanSec</title>
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+<style>
+  .dash-wrap{padding:60px 0 90px}
+  .dash-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;border-bottom:1px solid var(--line);padding-bottom:24px}
+  .dash-head h1{font-family:var(--font);font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+  .dash-head p{color:var(--mute);margin-top:4px}
+  .logout-btn{border:1px solid #fff;padding:9px 16px;border-radius:6px;font-size:.85rem;text-decoration:none;color:#fff}
+  .logout-btn:hover{background:#fff;color:#000}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .dcard{border:1px solid var(--line);background:#0a0a0a;border-radius:10px;padding:22px}
+  .dcard span{display:block;color:var(--mute);font-size:.78rem;margin-bottom:8px}
+  .dcard strong{font-family:var(--font);font-size:1.3rem}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
+  <ul>
+    <li><a href="{% url 'home' %}#home">home</a></li>
+    <li><a href="{% url 'blog:list' %}">blog</a></li>
+    <li><a href="{% url 'dashboard' %}">dashboard</a></li>
+  </ul>
+</div></nav>
+
+<main class="wrap dash-wrap">
+  <div class="dash-head">
+    <div>
+      <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
+      <p>{{ user.email }}</p>
+    </div>
+    <a class="logout-btn" href="{% url 'account_logout' %}">Log out</a>
+  </div>
+
+  <div class="cards">
+    <div class="dcard"><span>Username</span><strong>{{ user.username }}</strong></div>
+    <div class="dcard"><span>Member since</span><strong>{{ user.date_joined|date:"Y-m-d" }}</strong></div>
+    <div class="dcard"><span>Last login</span><strong>{{ user.last_login|date:"Y-m-d H:i" }}</strong></div>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
+  <a href="{% url 'home' %}#home">cd ~</a>
+</div></footer>
+</body>
+</html>

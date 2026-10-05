@@ -32,9 +32,9 @@ article{padding:44px 0 90px;font-family:var(--font-body)}
 article h1{font-family:var(--font);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:22px}
 article h2{font-family:var(--font);margin:40px 0 14px;font-size:1.35rem;font-weight:800;border-bottom:1px solid var(--line);padding-bottom:8px}
 article p{margin-bottom:16px;max-width:72ch;font-size:1.02rem;line-height:1.75}
-article code{font-family:var(--font);background:#111;border:1px solid var(--line);padding:1px 6px;font-size:.85em}
-article pre{font-family:var(--font);background:#0a0a0a;border:1px solid var(--line);padding:18px;overflow-x:auto;margin:18px 0;font-size:.85rem;line-height:1.7}
-article pre code{background:none;border:0;padding:0}
+article code{font-family:var(--font);background:#111;border:1px solid var(--line);padding:1px 6px;font-size:.95em}
+article pre{font-family:var(--font);background:#0a0a0a;border:1px solid var(--line);padding:18px;overflow-x:auto;margin:18px 0;font-size:1.05rem;line-height:1.7}
+article pre code{background:none;border:0;padding:0;font-size:inherit}
 
 /* minimal syntax accents: blue / red complementary pair, everything else stays mono white-gray */
 .k{color:#ff5c5c}            /* keywords: var, function calls */
@@ -55,3 +55,11 @@ footer .wrap{max-width:1120px;display:flex;justify-content:space-between;flex-wr
   nav ul{gap:14px;overflow-x:auto;font-size:.82rem}nav ul a::before{content:""}
   .post{grid-template-columns:1fr;gap:4px}.post span{display:none}
 }
+
+/* syntax highlighting for highlight.js — mapped onto the site's own palette */
+.hljs{background:transparent!important;color:var(--ink)}
+.hljs-keyword,.hljs-tag,.hljs-name,.hljs-attr,.hljs-selector-tag,.hljs-type{color:#ff5c5c}
+.hljs-string,.hljs-literal,.hljs-number,.hljs-meta,.hljs-regexp{color:#4fa8ff}
+.hljs-title,.hljs-function,.hljs-built_in,.hljs-class,.hljs-symbol{color:#4fa8ff}
+.hljs-comment{color:var(--mute);font-style:italic}
+.hljs-variable,.hljs-params,.hljs-punctuation,.hljs-operator{color:var(--ink)}

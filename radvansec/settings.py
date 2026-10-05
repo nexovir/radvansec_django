@@ -1,24 +1,32 @@
 """
-Django settings for the RadvanSec project.
+Django settings for the RadvanSec project (test environment).
 """
 
-import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- Core config, read from environment so secrets never live in git ---
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-change-me-before-deploying",
-)
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+# --- Core ---
+SECRET_KEY = "99fe9ce7-b9ef-4430-b0aa-97f3a8f8d0bb-a3211cae65190e8024dac26eec358498"
+DEBUG = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ALLOWED_HOSTS = [
-    h.strip() for h in os.environ.get(
-        "DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost"
-    ).split(",") if h.strip()
+    "radvansec.com",
+    "www.radvansec.com",
+    "181.214.140.21",
+    "127.0.0.1",
+    "localhost",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://181.214.140.21:8000",
+    "https://radvansec.com",
+    "https://www.radvansec.com",
+]
+
+ADMIN_PATH = "panel-99fe9ce7-b9ef-4430-b0aa-97f3a8f8d0bb/"
 
 # --- Applications ---
 INSTALLED_APPS = [
@@ -28,7 +36,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+
     "blog",
+    "dashboard",
 ]
 
 MIDDLEWARE = [
@@ -37,6 +53,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -81,29 +98,42 @@ USE_I18N = True
 USE_TZ = True
 
 # --- Static & media ---
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"   # populated by collectstatic for production
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Admin URL path can be overridden via env for a non-default path in production,
-# e.g. DJANGO_ADMIN_PATH=panel-x7k/  (see radvansec/urls.py)
-ADMIN_PATH = os.environ.get("DJANGO_ADMIN_PATH", "admin/")
+# --- Security (test: no HTTPS, no redirects) ---
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
-# --- Production security hardening (only active when DEBUG is False) ---
-if not DEBUG:
-    SECURE_SSL_REDIRECT = os.environ.get("DJANGO_SECURE_SSL_REDIRECT", "True") == "True"
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    X_FRAME_OPTIONS = "DENY"
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    CSRF_TRUSTED_ORIGINS = [
-        o.strip() for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
-    ]
+# --- Auth / allauth ---
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+ACCOUNT_SIGNUP_FIELDS = ["username*", "email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "dashboard"
+LOGOUT_REDIRECT_URL = "home"
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}

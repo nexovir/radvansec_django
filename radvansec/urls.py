@@ -6,7 +6,9 @@ from .views import home
 
 urlpatterns = [
     path(settings.ADMIN_PATH, admin.site.urls),
-    path("blog/", include("blog.urls")),
+    path("accounts/", include("allauth.urls")),
+    path("dashboard/", include("dashboard.urls")),
+    path("weblog/", include("blog.urls")),
     path("", home, name="home"),
 ]
 

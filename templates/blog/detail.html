@@ -12,6 +12,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+  article{
+    --fs:18px;
+    --fs-code:14px;
+  }
+
+  article p,
+  article li,
+  .callout{font-size:var(--fs) !important;line-height:1.8 !important}
+  article h2{font-size:calc(var(--fs) + 8px) !important}
+
+  article pre,
+  article pre code,
+  article pre code.hljs,
+  article pre .hljs{font-size:var(--fs-code) !important;line-height:1.7 !important}
+  article pre code *{font-size:inherit !important}
+  article :not(pre)>code{font-size:.9em !important}
+</style>
 </head>
 <body>
 
@@ -38,5 +57,12 @@
   <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
   <a href="{% url 'home' %}#home">cd ~</a>
 </div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/http.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/plaintext.min.js"></script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
