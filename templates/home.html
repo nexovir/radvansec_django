@@ -1,0 +1,123 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RadvanSec | Offensive security</title>
+<meta name="description" content="RadvanSec - penetration testing, red teaming and security products.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+<div class="grid"></div><div class="light"></div><div class="scan"></div>
+
+<nav><div class="wrap">
+  <a class="brand" href="{% url 'home' %}#home"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
+  <ul>
+    <li><a href="{% url 'home' %}#home">home</a></li><li><a href="{% url 'home' %}#about">about</a></li><li><a href="{% url 'home' %}#services">services</a></li>
+    <li><a href="{% url 'home' %}#products">products</a></li><li><a href="{% url 'blog:list' %}">blog</a></li><li><a href="{% url 'home' %}#contact">contact</a></li>
+  </ul>
+</div></nav>
+
+<main class="wrap" id="home">
+  <div class="hero">
+    <div>
+      <div class="prompt" id="prompt" aria-hidden="true"></div>
+      <h1>We break in<br>so <em>they can't</em>.<span class="cur"></span></h1>
+      <p class="lead">RadvanSec finds the weaknesses in your applications, networks and people before an attacker does, and shows you exactly how to close them.</p>
+      <div class="cta">
+        <a class="btn primary" href="#contact">Book a security assessment</a>
+        <a class="btn ghost" href="#services">See what we test</a>
+      </div>
+    </div>
+    <div class="logo" id="logo"><img src="{% static 'img/logo.png' %}" alt="RadvanSec logo"></div>
+  </div>
+
+  <section id="about">
+    <div class="tag">about</div>
+    <h2>Offensive security, done by hand.</h2>
+    <div class="about">
+      <div>
+        <p>RadvanSec is a security team that attacks systems the way real adversaries do: patiently, manually and with a clear goal. We do not hand you scanner output. We show you what an attacker could actually reach.</p>
+        <p>Every finding comes with evidence, a risk rating and a fix your engineers can apply the same day.</p>
+      </div>
+      <div class="facts">
+        <div><span>focus</span>offensive security</div>
+        <div><span>method</span>manual testing</div>
+        <div><span>delivery</span>report + retest</div>
+        <div><span>contact</span>info@radvansec.com</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="tag">services</div>
+    <h2>What we test</h2>
+    <div>
+      <a class="svc" href="#contact"><h3>Penetration testing</h3><p>Web, mobile, API and internal network tests that chain real vulnerabilities into real impact.</p><span>&gt;</span></a>
+      <a class="svc" href="#contact"><h3>Red team operations</h3><p>Goal-based attack simulations that test your people, processes and detection together.</p><span>&gt;</span></a>
+      <a class="svc" href="#contact"><h3>Cloud and infrastructure</h3><p>Configuration and architecture reviews for AWS, Azure, GCP and Kubernetes.</p><span>&gt;</span></a>
+      <a class="svc" href="#contact"><h3>Code and design review</h3><p>Find flaws in authentication, access control and business logic before release.</p><span>&gt;</span></a>
+      <a class="svc" href="#contact"><h3>Incident response</h3><p>Containment, forensics and recovery support when something has already gone wrong.</p><span>&gt;</span></a>
+      <a class="svc" href="#contact"><h3>Security training</h3><p>Practical workshops for developers and teams, built around attacks they will actually see.</p><span>&gt;</span></a>
+    </div>
+  </section>
+
+  <section id="products">
+    <div class="tag">products</div>
+    <h2>Tools we are building</h2>
+    <div class="cards">
+      <div class="card"><span class="pill">coming soon</span><h3>RadvanScan</h3><p>Attack surface discovery that maps your exposed assets and flags what an attacker would hit first.</p></div>
+      <div class="card"><span class="pill">coming soon</span><h3>RadvanLab</h3><p>Hands-on hacking labs for developers and security teams to practice on realistic targets.</p></div>
+      <div class="card"><span class="pill">coming soon</span><h3>RadvanWatch</h3><p>Continuous monitoring that alerts you when new weaknesses appear in your systems.</p></div>
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="tag">blog</div>
+    <h2>Notes from the field</h2>
+    <div>
+      {% for post in latest_posts %}
+      <a class="post" href="{% url 'blog:detail' post.slug %}"><time>{{ post.published_at|date:"Y-m-d" }}</time><div><h3>{{ post.title }}</h3><p>{{ post.summary }}</p></div><span>&gt;</span></a>
+      {% empty %}
+      <p class="lead">No posts yet. Write the first one from the admin panel.</p>
+      {% endfor %}
+    </div>
+    <a class="back" style="margin-top:28px;display:inline-block;border:1px solid #fff;padding:10px 18px;text-decoration:none" href="{% url 'blog:list' %}">all posts &gt;</a>
+  </section>
+
+  <section id="contact">
+    <div class="tag">contact</div>
+    <h2>Tell us what you need to protect.</h2>
+    <a class="mail" href="mailto:info@radvansec.com">info@radvansec.com</a>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
+  <a href="{% url 'home' %}#home">cd ~</a>
+</div></footer>
+
+<script>
+(function(){
+  var r=document.documentElement;
+  addEventListener('pointermove',function(e){
+    r.style.setProperty('--mx',e.clientX+'px');r.style.setProperty('--my',e.clientY+'px');
+    r.style.setProperty('--lx',((e.clientX/innerWidth-.5)*16)+'px');
+    r.style.setProperty('--ly',((e.clientY/innerHeight-.5)*16)+'px');
+  },{passive:true});
+  var el=document.getElementById('prompt'),txt='./assess --target your-company',i=0;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  el.innerHTML='<b>root@radvansec</b>:~$ <span id="t"></span>';
+  var t=document.getElementById('t');
+  if(reduce){t.textContent=txt;return}
+  (function type(){t.textContent=txt.slice(0,++i);if(i<txt.length)setTimeout(type,55+Math.random()*60)})();
+})();
+</script>
+</body>
+</html>

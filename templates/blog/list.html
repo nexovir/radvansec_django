@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog | RadvanSec</title>
+<meta name="description" content="Notes from the field: vulnerability write-ups and research from RadvanSec.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="{% static 'img/logo.png' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
+  <ul>
+    <li><a href="{% url 'home' %}#home">home</a></li><li><a href="{% url 'home' %}#about">about</a></li><li><a href="{% url 'home' %}#services">services</a></li>
+    <li><a href="{% url 'home' %}#products">products</a></li><li><a href="{% url 'blog:list' %}">blog</a></li><li><a href="{% url 'home' %}#contact">contact</a></li>
+  </ul>
+</div></nav>
+
+<main class="wrap">
+  <div class="tag">blog</div>
+  <h1 class="page">Notes from the field</h1>
+  <p class="sub">Vulnerability write-ups and research from the RadvanSec team.</p>
+
+  <div>
+    {% for post in posts %}
+    <a class="post" href="{% url 'blog:detail' post.slug %}">
+      <time>{{ post.published_at|date:"Y-m-d" }}</time>
+      <div><h2>{{ post.title }}</h2><p>{{ post.summary }}</p></div>
+      <span>&gt;</span>
+    </a>
+    {% empty %}
+    <p class="sub">No posts yet.</p>
+    {% endfor %}
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
+  <a href="{% url 'home' %}#home">cd ~</a>
+</div></footer>
+</body>
+</html>
