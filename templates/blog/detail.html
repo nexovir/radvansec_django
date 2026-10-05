@@ -6,6 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ post.title }} | RadvanSec</title>
 <meta name="description" content="{{ post.summary }}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.summary }}">
+{% if post.poster %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.poster.url }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endif %}
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="{% static 'img/logo.png' %}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,25 +21,174 @@
 <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <style>
-  article{
-    --fs:18px;
-    --fs-code:14px;
-  }
+article{
+  --fs:17px;
+  --fs-code:14px;
+  --pa:#3ddc97;
+  --pa-soft:rgba(61,220,151,.12);
+  --line:rgba(255,255,255,.09);
+  --muted:rgba(255,255,255,.62);
+  max-width:780px;
+  margin-inline:auto;
+}
 
-  article p,
-  article li,
-  .callout{font-size:var(--fs) !important;line-height:1.8 !important}
-  article h2{font-size:calc(var(--fs) + 8px) !important}
+article p,
+article li,
+.callout{font-size:var(--fs) !important;line-height:1.85 !important}
+article h2{font-size:calc(var(--fs) + 8px) !important}
 
-  article pre,
-  article pre code,
-  article pre code.hljs,
-  article pre .hljs{font-size:var(--fs-code) !important;line-height:1.7 !important}
-  article pre code *{font-size:inherit !important}
-  article :not(pre)>code{font-size:.9em !important}
+article pre,
+article pre code,
+article pre code.hljs,
+article pre .hljs{font-size:var(--fs-code) !important;line-height:1.7 !important}
+article pre code *{font-size:inherit !important}
+article :not(pre)>code{font-size:.9em !important}
+
+/* Reading progress */
+.read-progress{
+  position:fixed;top:0;left:0;height:3px;width:0;
+  background:linear-gradient(90deg,#3ddc97,#22d3ee);
+  z-index:1000;
+  box-shadow:0 0 12px rgba(61,220,151,.6);
+  transition:width .08s linear;
+}
+
+/* Hero */
+.post-hero{padding:56px 0 8px}
+.post-crumb{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  color:var(--muted);text-decoration:none;margin-bottom:26px;
+  transition:color .2s,transform .2s;
+}
+.post-crumb:hover{color:var(--pa);transform:translateX(-3px)}
+
+.post-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:999px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:500;
+  color:#fff;background:rgba(255,255,255,.05);
+  border:1px solid var(--line);
+  backdrop-filter:blur(6px);
+}
+.chip svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chip.accent{color:var(--pa);background:var(--pa-soft);border-color:rgba(61,220,151,.35)}
+
+.post-hero h1{
+  font-size:clamp(30px,5.2vw,48px) !important;
+  line-height:1.15 !important;
+  letter-spacing:-.02em;
+  margin:0 0 18px !important;
+  color:#fff !important;
+  background:none !important;
+  -webkit-background-clip:border-box !important;
+  background-clip:border-box !important;
+  -webkit-text-fill-color:#fff !important;
+  text-shadow:none !important;
+}
+
+.post-lead{
+  font-size:19px !important;line-height:1.65 !important;
+  color:var(--muted);margin:0 0 30px !important;max-width:680px;
+}
+
+/* Byline */
+.byline{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:16px 0;margin-bottom:28px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.avatar-stack{display:flex;align-items:center;flex-shrink:0}
+.avatar-stack .av{
+  width:52px;height:52px;border-radius:50%;
+  border:3px solid #050505;
+  margin-left:-16px;
+  object-fit:cover;flex-shrink:0;
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 6px 16px -4px rgba(0,0,0,.6);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;
+  position:relative;
+}
+.avatar-stack .av:first-child{margin-left:0}
+.avatar-stack .av:hover{transform:translateY(-5px) scale(1.08);z-index:5;box-shadow:0 0 0 2px var(--pa),0 10px 22px -6px rgba(61,220,151,.4)}
+.avatar-stack .av.ph{
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:19px;color:#031a10;
+  background:linear-gradient(135deg,#3ddc97,#22d3ee);
+}
+.avatar-stack .av.ph.v2{background:linear-gradient(135deg,#f9a8d4,#a78bfa)}
+.avatar-stack .av.ph.v3{background:linear-gradient(135deg,#fde68a,#fb923c)}
+
+.byline-text{display:flex;flex-direction:column;gap:3px;min-width:0}
+.byline-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--pa);
+}
+.byline-names{font-size:17px;font-weight:700;color:#fff;line-height:1.35}
+.byline-names .amp{color:var(--muted);font-weight:500}
+.byline-bio{font-size:13.5px;color:var(--muted);line-height:1.5}
+
+/* Poster */
+.post-poster{
+  margin:0 0 40px;border-radius:18px;overflow:hidden;
+  border:1px solid var(--line);
+  box-shadow:0 30px 60px -28px rgba(0,0,0,.8),0 0 0 1px rgba(61,220,151,.06);
+  position:relative;
+  background:rgba(255,255,255,.02);
+}
+.post-poster::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 65%,rgba(0,0,0,.35));
+}
+.post-poster img{display:block;width:100%;height:auto;max-height:480px;object-fit:cover}
+
+/* Body polish */
+.post-body{padding-bottom:12px}
+.post-body h2{margin-top:2.2em;position:relative;padding-left:16px}
+.post-body h2::before{
+  content:"";position:absolute;left:0;top:.18em;bottom:.18em;width:4px;border-radius:4px;
+  background:linear-gradient(180deg,#3ddc97,#22d3ee);
+}
+.post-body pre{border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.post-body img{max-width:100%;height:auto;border-radius:12px}
+
+/* Footer of post */
+.post-end{
+  margin-top:48px;padding-top:26px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.post-end .btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:10px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;
+  color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--line);
+  text-decoration:none;transition:all .2s;
+}
+.post-end .btn:hover{color:var(--pa);border-color:rgba(61,220,151,.5);background:var(--pa-soft)}
+.post-end .actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.share-group{display:flex;align-items:center;gap:6px}
+.share-label{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:4px;
+}
+.post-end .share-btn{
+  width:34px;height:34px;padding:0;justify-content:center;border-radius:9px;
+}
+.post-end .share-btn svg{width:15px;height:15px;fill:currentColor;display:block}
+.post-end .share-btn svg.ic-copy,
+.post-end .share-btn svg.ic-check{fill:none}
+.post-end .share-btn.copied{color:var(--pa);border-color:rgba(61,220,151,.5);background:var(--pa-soft)}
+
+@media (max-width:600px){
+  .post-hero{padding-top:36px}
+  .avatar-stack .av{width:44px;height:44px;margin-left:-13px}
+  .post-lead{font-size:17px !important}
+}
 </style>
 </head>
 <body>
+
+<div class="read-progress" id="readProgress"></div>
 
 <nav><div class="wrap">
   <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
@@ -44,12 +200,96 @@
 
 <main class="wrap">
 <article>
-  <div class="meta">{{ post.published_at|date:"Y-m-d" }} &middot; {{ post.read_minutes }} min read &middot; {{ post.author }}</div>
-  <h1>{{ post.title }}</h1>
 
-  {{ post.body_html|safe }}
+  <header class="post-hero">
+    <a class="post-crumb" href="{% url 'blog:list' %}">&lt; cd ../blog</a>
 
-  <a class="back" href="{% url 'blog:list' %}">&lt; back to blog</a>
+    <div class="post-chips">
+      <span class="chip accent">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        {{ post.read_minutes }} min read
+      </span>
+      <span class="chip">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+        {{ post.published_at|date:"M d, Y" }}
+      </span>
+    </div>
+
+    <h1>{{ post.title }}</h1>
+    <p class="post-lead">{{ post.summary }}</p>
+
+    {% with authors=post.authors.all %}
+    {% if authors %}
+    <div class="byline">
+      <div class="avatar-stack">
+        {% for a in authors %}
+          {% if a.profile.avatar %}
+            <img class="av" src="{{ a.profile.avatar.url }}" alt="{{ a.get_full_name|default:a.username }}" title="{{ a.get_full_name|default:a.username }}">
+          {% else %}
+            <div class="av ph v{{ forloop.counter|add:'0' }}" title="{{ a.get_full_name|default:a.username }}">{{ a.get_full_name|default:a.username|slice:":1"|upper }}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="byline-text">
+        <span class="byline-label">{% if authors|length > 1 %}written by{% else %}author{% endif %}</span>
+        <span class="byline-names">
+          {% for a in authors %}{{ a.get_full_name|default:a.username }}{% if not forloop.last %}{% if forloop.revcounter == 2 %} <span class="amp">&amp;</span> {% else %}<span class="amp">,</span> {% endif %}{% endif %}{% endfor %}
+        </span>
+        {% if authors|length == 1 %}
+          {% with a=authors.0 %}
+            {% if a.profile.bio %}<span class="byline-bio">{{ a.profile.bio }}</span>{% endif %}
+          {% endwith %}
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+  </header>
+
+  {% if post.poster %}
+  <figure class="post-poster">
+    <img src="{{ post.poster.url }}" alt="{{ post.title }}">
+  </figure>
+  {% endif %}
+
+  <div class="post-body" id="postBody">
+    {{ post.body_html|safe }}
+  </div>
+
+  <div class="post-end">
+    <a class="btn" href="{% url 'blog:list' %}">&lt; back to blog</a>
+
+    <div class="actions">
+      <div class="share-group" id="shareGroup">
+        <span class="share-label">share</span>
+
+        <a class="btn share-btn" data-net="x" target="_blank" rel="noopener noreferrer" aria-label="Share on X" title="X">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+
+        <a class="btn share-btn" data-net="linkedin" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+
+        <a class="btn share-btn" data-net="telegram" target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram" title="Telegram">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </a>
+
+        <a class="btn share-btn" data-net="whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="WhatsApp">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+
+        <a class="btn share-btn" data-net="facebook" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" title="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+
+        <button class="btn share-btn" type="button" id="copyLink" aria-label="Copy link" title="Copy link">
+          <svg class="ic-copy" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <svg class="ic-check" viewBox="0 0 24 24" style="display:none;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </article>
 </main>
 
@@ -63,6 +303,56 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/plaintext.min.js"></script>
-<script>hljs.highlightAll();</script>
+<script>
+hljs.highlightAll();
+
+(function () {
+  var bar = document.getElementById('readProgress');
+  var body = document.getElementById('postBody');
+  function update() {
+    var rect = body.getBoundingClientRect();
+    var total = rect.height - window.innerHeight * 0.6;
+    var done = Math.min(Math.max(-rect.top + window.innerHeight * 0.2, 0), total);
+    bar.style.width = (total > 0 ? (done / total) * 100 : 100) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  /* Copy link */
+  var btn = document.getElementById('copyLink');
+  var icCopy = btn.querySelector('.ic-copy');
+  var icCheck = btn.querySelector('.ic-check');
+  btn.addEventListener('click', function () {
+    var done = function () {
+      icCopy.style.display = 'none';
+      icCheck.style.display = 'block';
+      btn.classList.add('copied');
+      setTimeout(function () {
+        icCopy.style.display = 'block';
+        icCheck.style.display = 'none';
+        btn.classList.remove('copied');
+      }, 1800);
+    };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href).then(done);
+    }
+  });
+
+  /* Share links */
+  var url = encodeURIComponent(window.location.href);
+  var title = encodeURIComponent(document.title);
+  var links = {
+    x:        'https://twitter.com/intent/tweet?url=' + url + '&text=' + title,
+    linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
+    telegram: 'https://t.me/share/url?url=' + url + '&text=' + title,
+    whatsapp: 'https://wa.me/?text=' + title + '%20' + url,
+    facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url
+  };
+  document.querySelectorAll('#shareGroup [data-net]').forEach(function (a) {
+    a.href = links[a.dataset.net];
+  });
+})();
+</script>
 </body>
 </html>

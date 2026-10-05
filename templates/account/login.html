@@ -12,24 +12,164 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 <style>
-  .auth-wrap{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:40px 20px}
-  .auth-card{width:100%;max-width:380px;border:1px solid var(--line);background:#0a0a0a;padding:36px 32px;border-radius:10px}
-  .auth-card h1{font-family:var(--font);font-size:1.4rem;font-weight:800;margin-bottom:6px;letter-spacing:-.02em}
-  .auth-card .sub{margin-bottom:26px;font-size:.88rem}
-  .field{margin-bottom:16px}
-  .field label{display:block;font-size:.8rem;color:var(--mute);margin-bottom:6px;font-family:var(--font)}
-  .field input{width:100%;background:#060607;border:1px solid var(--line);color:var(--ink);padding:11px 12px;font-family:var(--font-body);font-size:.95rem;border-radius:6px}
-  .field input:focus{outline:none;border-color:#fff}
-  .auth-btn{width:100%;background:#fff;color:#000;border:0;padding:12px;font-weight:700;font-family:var(--font-body);font-size:.95rem;border-radius:6px;cursor:pointer;margin-top:6px}
-  .auth-btn:hover{background:#e7e7e3}
-  .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--mute);font-size:.78rem}
-  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
-  .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:#1a1a1a;border:0;padding:11px;font-weight:600;font-family:var(--font-body);font-size:.92rem;border-radius:6px;text-decoration:none}
-  .google-btn:hover{background:#e7e7e3}
-  .google-btn svg{width:18px;height:18px}
-  .errorlist{list-style:none;color:#ff5c5c;font-size:.82rem;margin:-8px 0 16px}
-  .auth-footer{margin-top:22px;text-align:center;font-size:.85rem;color:var(--mute)}
-  .auth-footer a{color:var(--ink);text-decoration:underline}
+.auth-wrap{
+  --pa:#3ddc97; --pa2:#22d3ee;
+  --line:rgba(255,255,255,.10);
+  --muted:rgba(255,255,255,.62);
+  --danger:#ff5d73;
+  position:relative;overflow:hidden;
+  min-height:calc(100vh - 64px);
+  display:flex;align-items:center;justify-content:center;
+  padding:48px 20px;
+  font-family:'Inter',system-ui,sans-serif;
+}
+
+/* background: grid + glow + slow radar sweep */
+.auth-wrap::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(61,220,151,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(61,220,151,.05) 1px,transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 72%);
+  mask-image:radial-gradient(ellipse at center,#000 20%,transparent 72%);
+}
+.auth-wrap::after{
+  content:"";position:absolute;left:50%;top:50%;width:900px;height:900px;margin:-450px 0 0 -450px;
+  border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0,transparent 80%,rgba(61,220,151,.10) 99%,rgba(61,220,151,.30) 100%);
+  -webkit-mask:radial-gradient(circle,transparent 18%,#000 19%,transparent 70%);
+  mask:radial-gradient(circle,transparent 18%,#000 19%,transparent 70%);
+  animation:authspin 14s linear infinite;
+}
+@keyframes authspin{to{transform:rotate(360deg)}}
+
+/* card */
+.auth-card{
+  position:relative;z-index:1;width:100%;max-width:420px;
+  padding:38px 34px 30px;border-radius:22px;
+  border:1px solid rgba(61,220,151,.28);
+  background:
+    radial-gradient(420px circle at 50% 0%,rgba(61,220,151,.13),transparent 70%),
+    rgba(8,10,10,.82);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  box-shadow:0 30px 80px -30px rgba(61,220,151,.30),0 0 0 1px rgba(255,255,255,.02) inset;
+  animation:authin .7s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes authin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* logo with spinning ring */
+.auth-logo{position:relative;width:78px;height:78px;margin:0 auto 18px}
+.auth-logo::before,.auth-logo::after{content:"";position:absolute;border-radius:50%}
+.auth-logo::before{inset:0;border:1px dashed rgba(34,211,238,.45);animation:authspin 18s linear infinite}
+.auth-logo::after{
+  inset:8px;background:radial-gradient(circle,rgba(61,220,151,.30),transparent 70%);filter:blur(8px);
+}
+.auth-logo img{position:absolute;inset:0;margin:auto;width:50px;height:auto;z-index:1;filter:drop-shadow(0 0 12px rgba(61,220,151,.55))}
+
+.auth-prompt{
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);
+  text-align:center;margin-bottom:10px;
+}
+.auth-prompt b{color:var(--pa);font-weight:700}
+.auth-card h1{
+  font-family:'JetBrains Mono',monospace;font-size:1.7rem;font-weight:800;letter-spacing:-.02em;
+  text-align:center;margin:0 0 6px;color:#fff;
+}
+.auth-card .sub{text-align:center;margin:0 0 26px;font-size:.92rem;color:var(--muted)}
+
+/* fields */
+.field{margin-bottom:16px}
+.field label{
+  display:block;margin-bottom:7px;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--pa);
+}
+.input-box{position:relative}
+.field input[type=text],.field input[type=password],.field input[type=email]{
+  width:100%;padding:13px 14px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+  color:#fff;font-family:'Inter',sans-serif;font-size:.97rem;
+  transition:border-color .2s,box-shadow .2s,background .2s;
+}
+.field input::placeholder{color:rgba(255,255,255,.28)}
+.field input:focus{
+  outline:none;border-color:rgba(61,220,151,.7);background:rgba(61,220,151,.05);
+  box-shadow:0 0 0 4px rgba(61,220,151,.13);
+}
+.field.has-error input{border-color:rgba(255,93,115,.6)}
+#id_password{padding-right:48px}
+.toggle-pw{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:38px;height:38px;border:0;border-radius:9px;cursor:pointer;
+  background:transparent;color:var(--muted);display:grid;place-items:center;transition:color .2s,background .2s;
+}
+.toggle-pw:hover{color:var(--pa);background:rgba(61,220,151,.1)}
+.toggle-pw:focus-visible{outline:2px solid var(--pa);outline-offset:1px}
+.toggle-pw svg{width:19px;height:19px}
+
+.errorlist{
+  list-style:none;margin:8px 0 0;padding:0;
+  font-size:.82rem;color:var(--danger);
+}
+.errorbox{
+  margin:0 0 18px;padding:11px 14px;border-radius:12px;
+  background:rgba(255,93,115,.08);border:1px solid rgba(255,93,115,.35);
+}
+.errorbox .errorlist{margin:0}
+
+/* row: remember + forgot */
+.auth-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 20px;font-size:.85rem}
+.check{display:inline-flex;align-items:center;gap:9px;color:var(--muted);cursor:pointer;user-select:none}
+.check input{
+  appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:0;border-radius:5px;
+  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.04);cursor:pointer;
+  display:grid;place-items:center;transition:all .15s;
+}
+.check input:checked{background:linear-gradient(135deg,var(--pa),var(--pa2));border-color:transparent}
+.check input:checked::after{content:"";width:8px;height:4px;border:2px solid #04140c;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.check input:focus-visible{outline:2px solid var(--pa);outline-offset:2px}
+.auth-row a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.auth-row a:hover{color:var(--pa);border-color:rgba(61,220,151,.5)}
+
+/* buttons */
+.auth-btn{
+  width:100%;padding:14px;border:1px solid transparent;border-radius:12px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:14.5px;font-weight:800;color:#04140c;
+  background:linear-gradient(135deg,#3ddc97,#22d3ee);
+  box-shadow:0 14px 32px -14px rgba(61,220,151,.7);
+  transition:transform .2s,box-shadow .2s,opacity .2s;
+}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 20px 38px -14px rgba(61,220,151,.85)}
+.auth-btn:active{transform:translateY(0)}
+.auth-btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.auth-btn[disabled]{opacity:.7;cursor:wait;transform:none}
+
+.divider{display:flex;align-items:center;gap:14px;margin:24px 0;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.google-btn{
+  display:flex;align-items:center;justify-content:center;gap:11px;width:100%;
+  padding:12.5px;border-radius:12px;text-decoration:none;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+  color:#fff;font-weight:600;font-size:.93rem;
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.google-btn:hover{border-color:rgba(61,220,151,.5);background:rgba(61,220,151,.08);transform:translateY(-1px)}
+.google-btn:focus-visible{outline:2px solid var(--pa);outline-offset:3px}
+.google-btn svg{width:19px;height:19px}
+
+.auth-footer{margin-top:24px;text-align:center;font-size:.88rem;color:var(--muted)}
+.auth-footer a{color:var(--pa);text-decoration:none;font-weight:600;border-bottom:1px solid rgba(61,220,151,.35)}
+.auth-footer a:hover{border-color:var(--pa)}
+
+@media (max-width:480px){
+  .auth-card{padding:32px 22px 26px;border-radius:18px}
+  .auth-wrap::after{width:620px;height:620px;margin:-310px 0 0 -310px}
+}
+@media (prefers-reduced-motion:reduce){
+  .auth-wrap::after,.auth-logo::before,.auth-card{animation:none}
+}
 </style>
 </head>
 <body>
@@ -44,33 +184,63 @@
 
 <div class="auth-wrap">
   <div class="auth-card">
+
+    <div class="auth-logo"><img src="{% static 'img/logo.png' %}" alt="RadvanSec"></div>
+    <div class="auth-prompt"><b>root@radvansec</b>:~$ ./login</div>
     <h1>Sign in</h1>
     <p class="sub">Log in to access your dashboard.</p>
 
-    <form method="post" action="{% url 'account_login' %}">
+    <form method="post" action="{% url 'account_login' %}" id="loginForm" novalidate>
       {% csrf_token %}
-
-      {% if form.non_field_errors %}
-        <ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
       {% endif %}
 
-      <div class="field">
+      {% if form.non_field_errors %}
+        <div class="errorbox" role="alert">
+          <ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        </div>
+      {% endif %}
+
+      <div class="field{% if form.login.errors %} has-error{% endif %}">
         <label for="id_login">Username or email</label>
-        <input type="text" name="login" id="id_login" autocomplete="username" required autofocus>
+        <div class="input-box">
+          <input type="text" name="login" id="id_login" value="{{ form.login.value|default:'' }}"
+                 placeholder="you@company.com" autocomplete="username" required autofocus>
+        </div>
+        {% if form.login.errors %}
+          <ul class="errorlist">{% for e in form.login.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
       </div>
 
-      <div class="field">
+      <div class="field{% if form.password.errors %} has-error{% endif %}">
         <label for="id_password">Password</label>
-        <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+        <div class="input-box">
+          <input type="password" name="password" id="id_password"
+                 placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        {% if form.password.errors %}
+          <ul class="errorlist">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
       </div>
 
-      <button class="auth-btn" type="submit">Sign in</button>
+      <div class="auth-row">
+        <label class="check"><input type="checkbox" name="remember" id="id_remember">Remember me</label>
+        <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+      </div>
+
+      <button class="auth-btn" type="submit" id="submitBtn">Sign in</button>
     </form>
 
     <div class="divider">or</div>
 
     <a class="google-btn" href="{% provider_login_url 'google' %}">
-      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.5 0-14 4.2-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.6 35 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.6 5.1C9.9 39.8 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C41.5 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.5 0-14 4.2-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.6 35 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.6 5.1C9.9 39.8 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C41.5 36.4 44 30.8 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
       Continue with Google
     </a>
 
@@ -80,5 +250,26 @@
   </div>
 </div>
 
+<script>
+(function(){
+  var pw=document.getElementById('id_password'),
+      btn=document.getElementById('togglePw'),
+      form=document.getElementById('loginForm'),
+      sub=document.getElementById('submitBtn');
+
+  /* show / hide password */
+  btn.addEventListener('click',function(){
+    var show=pw.type==='password';
+    pw.type=show?'text':'password';
+    btn.setAttribute('aria-pressed',show);
+    btn.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+
+  /* prevent double submit */
+  form.addEventListener('submit',function(){
+    sub.disabled=true;sub.textContent='Signing in...';
+  });
+})();
+</script>
 </body>
 </html>
