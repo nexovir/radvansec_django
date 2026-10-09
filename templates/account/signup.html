@@ -15,13 +15,7 @@
 </head>
 <body>
 
-<nav><div class="wrap">
-  <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
-  <ul>
-    <li><a href="{% url 'home' %}#home">home</a></li>
-    <li><a href="{% url 'blog:list' %}">blog</a></li>
-  </ul>
-</div></nav>
+{% include "nav.html" %}
 
 <div class="auth-wrap">
   <div class="auth-card wide">

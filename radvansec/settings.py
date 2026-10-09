@@ -2,12 +2,19 @@
 Django settings for the RadvanSec project (test environment).
 """
 
+import os
 from pathlib import Path
+
+from celery.schedules import crontab
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Core ---
-SECRET_KEY = "99fe9ce7-b9ef-4430-b0aa-97f3a8f8d0bb-a3211cae65190e8024dac26eec358498"
+# TODO: move to environment variables (this key was shared in chat, rotate it)
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "99fe9ce7-b9ef-4430-b0aa-97f3a8f8d0bb-a3211cae65190e8024dac26eec358498",
+)
 DEBUG = False
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -21,14 +28,13 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 CSRF_TRUSTED_ORIGINS = [
     "http://181.214.140.21:8000",
     "https://radvansec.com",
     "https://www.radvansec.com",
 ]
+
+ACCOUNT_LOGOUT_ON_GET = True
 
 ADMIN_PATH = "panel-99fe9ce7-b9ef-4430-b0aa-97f3a8f8d0bb/"
 
@@ -49,6 +55,7 @@ INSTALLED_APPS = [
 
     "blog",
     "dashboard",
+    "cve_monitor",
 ]
 
 MIDDLEWARE = [
@@ -86,6 +93,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        "OPTIONS": {"timeout": 30},
     }
 }
 
@@ -134,10 +142,32 @@ LOGOUT_REDIRECT_URL = "home"
 
 SOCIALACCOUNT_AUTO_SIGNUP = False
 SOCIALACCOUNT_QUERY_EMAIL = True
-
+SOCIALACCOUNT_ADAPTER = "dashboard.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["profile", "email"],
         "AUTH_PARAMS": {"access_type": "online"},
     }
+}
+
+# --- Celery ---
+CELERY_BROKER_URL = "redis://localhost:6379/2"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/3"
+CELERY_TASK_DEFAULT_QUEUE = "radvansec"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+CELERY_BEAT_SCHEDULE = {
+    "sync-pocs": {
+        "task": "cve_monitor.tasks.sync_pocs",
+        "schedule": crontab(minute=0, hour="*/1"),
+        "kwargs": {"min_year": 0, "silent": False},
+        "options": {"expires": 3600},
+    },
+    "enrich-cves": {
+        "task": "cve_monitor.tasks.enrich_cves",
+        "schedule": crontab(hour="*/1"),
+        "options": {"expires": 600},
+    },
 }

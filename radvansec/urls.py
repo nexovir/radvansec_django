@@ -9,6 +9,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("dashboard/", include("dashboard.urls")),
     path("weblog/", include("blog.urls")),
+    path("cve/", include("cve_monitor.urls")),
     path("", home, name="home"),
 ]
 

@@ -2,36 +2,71 @@
 {% load static %}
 
 {% block title %}Dashboard | RadvanSec{% endblock %}
+{% block description %}Your RadvanSec account dashboard.{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/blog.css' %}">
+<script>document.documentElement.classList.add('rs-js')</script>
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
 <style>
-.dash-wrap{padding:60px 0 90px}
-.dash-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:36px;border-bottom:1px solid var(--line);padding-bottom:24px}
-.dash-head h1{font-family:var(--font);font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
-.dash-head p{color:var(--mute);margin-top:4px}
-.logout-btn{border:1px solid #fff;padding:9px 16px;border-radius:6px;font-size:.85rem;text-decoration:none;color:#fff}
-.logout-btn:hover{background:#fff;color:#000}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-.dcard{border:1px solid var(--line);background:#0a0a0a;border-radius:10px;padding:22px}
-.dcard span{display:block;color:var(--mute);font-size:.78rem;margin-bottom:8px}
-.dcard strong{font-family:var(--font);font-size:1.3rem}
+.dash{
+  --pa:#3ddc97;--pa2:#22d3ee;--pa-soft:rgba(61,220,151,.12);
+  --line:rgba(255,255,255,.09);--muted:rgba(255,255,255,.62);--card:rgba(255,255,255,.03);
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  max-width:1080px;margin-inline:auto;padding:56px 0 90px;
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+.dash a{color:inherit}
+
+.dash-head{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--line);
+}
+.dash-prompt{font-family:var(--mono);font-size:14px;color:var(--muted);margin-bottom:14px;min-height:20px}
+.dash-prompt b{color:var(--pa);font-weight:700}
+.dash-cur{display:inline-block;width:.6em;height:1.1em;margin-left:2px;background:var(--pa);vertical-align:-.2em;animation:dblink 1s steps(1) infinite}
+@keyframes dblink{50%{opacity:0}}
+.dash-head h1{font-size:clamp(24px,3.2vw,34px);font-weight:700;letter-spacing:-.02em;color:#fff;margin:0}
+.dash-head p{color:var(--muted);margin-top:6px;font-size:15px}
+
+.logout-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 20px;border-radius:10px;cursor:pointer;
+  font-family:var(--mono);font-size:13.5px;font-weight:700;
+  text-decoration:none;color:#fff;background:rgba(255,255,255,.05);
+  border:1px solid var(--line);transition:all .2s;
+}
+.logout-btn:hover{color:#ff6b6b;border-color:rgba(255,107,107,.45);background:rgba(255,107,107,.08)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.dcard{
+  border:1px solid var(--line);background:var(--card);border-radius:16px;padding:22px;
+  transition:border-color .2s,transform .2s;
+}
+.dcard:hover{border-color:rgba(61,220,151,.4);transform:translateY(-2px)}
+.dcard span{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--pa);margin-bottom:10px}
+.dcard strong{display:block;font-size:19px;font-weight:700;color:#fff;letter-spacing:-.01em;word-break:break-word}
+
+@media(max-width:600px){
+  .dash{padding-top:36px}
+  .dash-head{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  .dash-cur{animation:none}
+}
 </style>
 {% endblock %}
 
 {% block body %}
-<nav><div class="wrap">
-  <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
-  <ul>
-    <li><a href="{% url 'home' %}#home">home</a></li>
-    <li><a href="{% url 'blog:list' %}">blog</a></li>
-    <li><a href="{% url 'dashboard' %}">dashboard</a></li>
-  </ul>
-</div></nav>
+<div class="grid"></div><div class="light"></div><div class="scan"></div>
 
-<main class="wrap dash-wrap">
+{% include "nav.html" %}
+
+<main class="wrap dash">
   <div class="dash-head">
     <div>
+      <div class="dash-prompt" id="prompt" aria-hidden="true"></div>
       <h1>Welcome back, {{ user.first_name|default:user.username }}</h1>
       <p>{{ user.email }}</p>
     </div>
@@ -46,7 +81,27 @@
 </main>
 
 <footer><div class="wrap">
-  <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
+  <span>&copy; {% now "Y" %} RadvanSec</span>
+  <a href="mailto:info@radvansec.com">info@radvansec.com</a>
   <a href="{% url 'home' %}#home">cd ~</a>
 </div></footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  var r=document.documentElement;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  addEventListener('pointermove',function(e){
+    r.style.setProperty('--mx',e.clientX+'px');r.style.setProperty('--my',e.clientY+'px');
+  },{passive:true});
+
+  var el=document.getElementById('prompt'),txt='whoami --session',i=0;
+  el.innerHTML='<b>root@radvansec</b>:~$ <span id="t"></span><span class="dash-cur"></span>';
+  var t=document.getElementById('t');
+  if(reduce){t.textContent=txt}
+  else{(function type(){t.textContent=txt.slice(0,++i);if(i<txt.length)setTimeout(type,55+Math.random()*60)})()}
+})();
+</script>
 {% endblock %}

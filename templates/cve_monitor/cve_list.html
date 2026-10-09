@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CVE Monitor | RadvanSec{% endblock %}
+{% block description %}Live radar of public proof-of-concept exploits for new CVEs, tracked from GitHub.{% endblock %}
+
+{% block extra_head %}
+<script>document.documentElement.classList.add('rs-js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+<style>
+.cv{
+  /* colors */
+  --pa:#3ddc97;--pa2:#22d3ee;--pa-soft:rgba(61,220,151,.12);
+  --line:rgba(255,255,255,.09);--muted:rgba(255,255,255,.62);--card:rgba(255,255,255,.03);
+  --c-new:#3ddc97;--c-fresh:#22d3ee;--c-hot:#ff9f43;--c-multi:#b794ff;
+
+  /* fonts */
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+
+  /* type scale */
+  --fs-xs:12px;
+  --fs-sm:14px;
+  --fs-base:16px;
+  --fs-lg:20px;
+  --fs-xl:32px;
+  --fs-2xl:clamp(32px,4.4vw,48px);
+
+  /* spacing scale */
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
+
+  /* radius */
+  --r-md:8px;--r-lg:16px;
+
+  max-width:1120px;margin-inline:auto;padding-bottom:var(--sp-12);
+  font-family:var(--sans);font-size:var(--fs-base);line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;
+  font-variant-numeric:tabular-nums;
+}
+.cv, .cv *{font-family:inherit}
+.cv a{color:inherit}
+
+/* reveal */
+.rs-js .cv-rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.rs-js .cv-rv.in{opacity:1;transform:none}
+
+/* fancy = mono */
+.cv .cv-prompt,.cv .cv-live,.cv .radar-cap,.cv .blip span,.cv .cv-tag,.cv .cv-lb,.cv .cv-cur{font-family:var(--mono)}
+
+/* ================= HERO ================= */
+.cv-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--sp-6);align-items:center;padding:var(--sp-12) 0 var(--sp-8)}
+.cv-prompt{font-size:var(--fs-sm);color:var(--muted);min-height:24px;margin-bottom:var(--sp-4)}
+.cv-prompt b{color:var(--pa);font-weight:700}
+.cv-cur{display:inline-block;width:.6em;height:1.1em;margin-left:2px;background:var(--pa);vertical-align:-.2em;animation:cvblink 1s steps(1) infinite}
+@keyframes cvblink{50%{opacity:0}}
+.cv h1{font-size:var(--fs-2xl);line-height:1.1;letter-spacing:-.03em;font-weight:700;margin:0 0 var(--sp-4);color:#fff}
+.cv h1 em{font-style:normal;color:#000;position:relative;white-space:nowrap}
+.cv h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.09em;border-radius:4px;background:linear-gradient(90deg,#3ddc97,#22d3ee)}
+.cv-lead{color:var(--muted);max-width:480px;margin:0 0 var(--sp-6);font-size:var(--fs-base);line-height:1.7}
+.cv-live{display:inline-flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-xs);font-weight:500;color:var(--pa);border:1px solid rgba(61,220,151,.35);background:var(--pa-soft);padding:var(--sp-1) var(--sp-3);border-radius:99px}
+.cv-live i{width:8px;height:8px;border-radius:50%;background:var(--pa);box-shadow:0 0 10px var(--pa);animation:cvping 1.6s ease-out infinite}
+@keyframes cvping{0%{box-shadow:0 0 0 0 rgba(61,220,151,.7)}100%{box-shadow:0 0 0 10px rgba(61,220,151,0)}}
+
+/* radar */
+.radar{position:relative;width:100%;max-width:380px;aspect-ratio:1;margin-left:auto;border-radius:50%;
+  background:radial-gradient(circle,rgba(61,220,151,.10),rgba(61,220,151,.02) 60%,transparent 72%);
+  border:1px solid rgba(61,220,151,.45);box-shadow:0 0 50px -10px rgba(61,220,151,.45),inset 0 0 40px rgba(61,220,151,.08)}
+.radar .ring{position:absolute;border-radius:50%;border:1px solid rgba(61,220,151,.22);inset:0;margin:auto}
+.radar .r1{width:66%;height:66%}.radar .r2{width:33%;height:33%}
+.radar .ax{position:absolute;background:rgba(61,220,151,.2)}
+.radar .ax.h{left:0;right:0;top:50%;height:1px}.radar .ax.v{top:0;bottom:0;left:50%;width:1px}
+.radar .sweep{position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(61,220,151,0) 0deg,rgba(61,220,151,0) 285deg,rgba(61,220,151,.38) 358deg,rgba(34,211,238,.7) 360deg);
+  animation:cvsweep 5s linear infinite}
+@keyframes cvsweep{to{transform:rotate(360deg)}}
+.radar .core{position:absolute;inset:0;margin:auto;width:8px;height:8px;border-radius:50%;background:var(--pa);box-shadow:0 0 14px var(--pa)}
+.blip{position:absolute;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--pa2);box-shadow:0 0 12px var(--pa2);animation:cvblip 5s ease-in-out infinite}
+.blip.big{width:12px;height:12px;margin:-6px;background:var(--c-hot);box-shadow:0 0 16px var(--c-hot)}
+.blip span{position:absolute;left:16px;top:-6px;font-size:var(--fs-xs);color:#fff;white-space:nowrap;background:rgba(0,0,0,.8);border:1px solid var(--line);padding:2px var(--sp-2);border-radius:var(--r-md);opacity:0;transition:opacity .15s;pointer-events:none}
+.blip:hover span{opacity:1}
+@keyframes cvblip{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+.radar-cap{position:absolute;left:0;right:0;bottom:-32px;text-align:center;font-size:var(--fs-xs);color:var(--muted)}
+
+/* ================= STATS ================= */
+.cv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-4);margin:var(--sp-12) 0 var(--sp-8)}
+.cv-stat{border:1px solid var(--line);background:var(--card);border-radius:var(--r-lg);padding:var(--sp-4) var(--sp-6)}
+.cv-stat b{display:block;font-size:var(--fs-xl);line-height:1.2;font-weight:700;color:#fff;letter-spacing:-.02em}
+.cv-stat small{display:block;margin-top:var(--sp-1);color:var(--muted);font-size:var(--fs-sm)}
+.cv-stat b.g{color:var(--pa)}
+
+/* ================= FILTERS ================= */
+.cv-tag{display:inline-block;margin-bottom:var(--sp-3);font-size:var(--fs-xs);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--pa)}
+.cv-tag::before{content:"$ ";opacity:.6}
+.cv-filters{border:1px solid var(--line);background:var(--card);border-radius:var(--r-lg);padding:var(--sp-6);display:grid;grid-template-columns:2fr repeat(3,1fr);gap:var(--sp-4);margin-bottom:var(--sp-4)}
+.cv-filters label{display:block;font-size:var(--fs-xs);font-weight:600;color:var(--muted);margin-bottom:var(--sp-2);letter-spacing:.06em;text-transform:uppercase}
+.cv-filters input,.cv-filters select{width:100%;height:44px;background:rgba(0,0,0,.45);color:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:0 var(--sp-3);font-family:var(--sans);font-size:var(--fs-base)}
+.cv-filters select option{background:#0b0b0c}
+.cv-filters input:focus,.cv-filters select:focus{outline:none;border-color:rgba(61,220,151,.6);box-shadow:0 0 0 3px var(--pa-soft)}
+.cv-actions{grid-column:span 2;display:flex;gap:var(--sp-3);align-items:flex-end}
+.cv-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:44px;padding:0 var(--sp-6);border-radius:var(--r-md);cursor:pointer;font-family:var(--sans);font-size:var(--fs-base);font-weight:600;color:#04140c;background:linear-gradient(135deg,#3ddc97,#22d3ee);border:1px solid transparent;transition:transform .2s}
+.cv-btn:hover{transform:translateY(-2px)}
+.cv-btn.ghost{color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.cv-btn.ghost:hover{color:var(--pa);border-color:rgba(61,220,151,.5);background:var(--pa-soft)}
+
+.cv-chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-6)}
+.cv-chip{display:inline-flex;align-items:center;height:36px;padding:0 var(--sp-4);border-radius:99px;border:1px solid var(--line);color:var(--muted);font-size:var(--fs-sm);font-weight:500;transition:all .2s}
+.cv-chip:hover{border-color:rgba(61,220,151,.5);color:#fff}
+.cv-chip.on{background:var(--pa-soft);border-color:var(--pa);color:var(--pa)}
+.cv-count{color:var(--muted);font-size:var(--fs-sm);margin:0 0 var(--sp-4)}
+
+/* ================= CARDS ================= */
+.cv-card{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--card);border-radius:var(--r-lg);padding:var(--sp-6);margin-bottom:var(--sp-4);transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s}
+.cv-card::before{content:"";position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s;background:radial-gradient(380px circle at var(--cx,50%) var(--cy,50%),rgba(61,220,151,.14),transparent 60%)}
+.cv-card:hover{transform:translateY(-2px);border-color:rgba(61,220,151,.45)}
+.cv-card:hover::before{opacity:1}
+.cv-top{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);flex-wrap:wrap}
+.cv-id{font-size:var(--fs-lg);line-height:1.3;font-weight:700;letter-spacing:-.01em;color:#fff}
+.cv-id:hover{color:var(--pa)}
+.cv-tags{display:flex;gap:var(--sp-2);flex-wrap:wrap}
+.cv-lb{font-size:var(--fs-xs);line-height:1;font-weight:700;letter-spacing:.04em;padding:var(--sp-2) var(--sp-3);border-radius:99px;border:1px solid}
+.cv-lb.new{color:var(--c-new);border-color:var(--c-new);background:rgba(61,220,151,.1)}
+.cv-lb.fresh{color:var(--c-fresh);border-color:var(--c-fresh);background:rgba(34,211,238,.1)}
+.cv-lb.hot{color:var(--c-hot);border-color:var(--c-hot);background:rgba(255,159,67,.1)}
+.cv-lb.multi{color:var(--c-multi);border-color:var(--c-multi);background:rgba(183,148,255,.1)}
+.cv-lb.critical{color:#ff4d6d;border-color:#ff4d6d;background:rgba(255,77,109,.12)}
+.cv-lb.high{color:#ff9f43;border-color:#ff9f43;background:rgba(255,159,67,.1)}
+.sev-critical{color:#ff4d6d !important}.sev-high{color:#ff9f43 !important}
+.sev-medium{color:#ffd166 !important}.sev-low{color:var(--pa) !important}
+
+.cv-meta{display:flex;gap:var(--sp-2) var(--sp-6);flex-wrap:wrap;margin-top:var(--sp-3);font-size:var(--fs-sm);color:var(--muted)}
+.cv-meta b{color:#fff;font-weight:600}
+
+.cv .cv-desc{margin:var(--sp-4) 0 0;font-size:var(--fs-base);font-weight:400;line-height:1.7;color:rgba(255,255,255,.88);white-space:pre-line;max-width:80ch}
+.cv .cv-desc.pending{font-size:var(--fs-sm);font-style:italic;color:var(--muted)}
+
+.cv-toprepo{margin-top:var(--sp-4);font-size:var(--fs-sm);color:var(--muted);word-break:break-all}
+.cv-toprepo a{color:var(--pa2);font-weight:500}.cv-toprepo a:hover{color:var(--pa)}
+.cv details{margin-top:var(--sp-4)}
+.cv summary{cursor:pointer;color:var(--pa);font-size:var(--fs-sm);font-weight:600;user-select:none;list-style:none}
+.cv summary::-webkit-details-marker{display:none}
+.cv summary::before{content:"\25B8  ";opacity:.8}
+.cv details[open] summary::before{content:"\25BE  "}
+.cv-repo{display:flex;justify-content:space-between;gap:var(--sp-4);padding:var(--sp-3) 0;border-top:1px solid var(--line);font-size:var(--fs-sm)}
+.cv-repo:first-of-type{margin-top:var(--sp-3)}
+.cv-repo a{font-size:var(--fs-sm);color:#fff;font-weight:600}.cv-repo a:hover{color:var(--pa)}
+.cv-repo p{margin:var(--sp-1) 0 0;color:var(--muted);font-size:var(--fs-sm);line-height:1.6}
+.cv-repo .st{white-space:nowrap;color:var(--muted);font-size:var(--fs-sm)}
+.cv-fork{font-size:var(--fs-xs);font-weight:500;border:1px solid var(--line);border-radius:var(--r-md);padding:0 var(--sp-2);color:var(--muted);margin-left:var(--sp-2)}
+.cv-empty{text-align:center;color:var(--muted);padding:var(--sp-12) 0;border:1px dashed var(--line);border-radius:var(--r-lg);font-size:var(--fs-base)}
+.cv-pager{display:flex;justify-content:center;align-items:center;gap:var(--sp-4);margin-top:var(--sp-8);color:var(--muted);font-size:var(--fs-sm)}
+.cv-pager a{display:inline-flex;align-items:center;height:36px;border:1px solid var(--line);border-radius:var(--r-md);padding:0 var(--sp-4);color:#fff;font-weight:500;transition:all .2s}
+.cv-pager a:hover{border-color:rgba(61,220,151,.5);color:var(--pa)}
+.cv-note{margin-top:var(--sp-8);text-align:center;color:var(--muted);font-size:var(--fs-xs);line-height:1.7}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .cv-hero{grid-template-columns:1fr}
+  .radar{margin:0 auto var(--sp-8);max-width:300px;order:-1}
+  .cv-stats{grid-template-columns:repeat(2,1fr)}
+  .cv-filters{grid-template-columns:1fr 1fr}.cv-filters .qf{grid-column:1/-1}
+  .cv-actions{grid-column:1/-1}
+}
+@media(max-width:600px){
+  .cv-card{padding:var(--sp-4)}
+  .cv-filters{padding:var(--sp-4)}
+}
+@media(prefers-reduced-motion:reduce){
+  .radar .sweep,.blip,.cv-live i,.cv-cur{animation:none}
+  .rs-js .cv-rv{opacity:1;transform:none;transition:none}
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="grid"></div><div class="light"></div><div class="scan"></div>
+
+{% include "nav.html" %}
+
+<main class="wrap cv" id="top">
+
+  <!-- Hero + radar -->
+  <div class="cv-hero">
+    <div>
+      <div class="cv-prompt" id="prompt" aria-hidden="true"></div>
+      <h1>Every new <em>exploit</em>,<br>on the radar.</h1>
+      <p class="cv-lead">Public proof-of-concept exploits for fresh CVEs, tracked from GitHub around the clock. Filter, search and stay ahead of attackers.</p>
+      <span class="cv-live"><i></i>monitoring live</span>
+    </div>
+
+    <div class="radar" role="img" aria-label="Radar of CVEs discovered in the last 24 hours">
+      <div class="ring r1"></div><div class="ring r2"></div>
+      <div class="ax h"></div><div class="ax v"></div>
+      <div class="sweep"></div>
+      <div class="core"></div>
+      {% for cid, stars in radar %}
+      <div class="blip {% if stars >= 100 %}big{% endif %}" data-i="{{ forloop.counter0 }}" title="{{ cid }}"><span>{{ cid }}</span></div>
+      {% endfor %}
+      <div class="radar-cap">{{ radar|length }} contact{{ radar|length|pluralize }} in last 24h</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="cv-stats">
+    <div class="cv-stat cv-rv"><b>{{ stats.total }}</b><small>CVEs tracked</small></div>
+    <div class="cv-stat cv-rv"><b>{{ stats.pocs }}</b><small>PoC repositories</small></div>
+    <div class="cv-stat cv-rv"><b class="g">{{ stats.new24 }}</b><small>New in 24h</small></div>
+    <div class="cv-stat cv-rv"><b>{{ stats.fresh7 }}</b><small>PoC updated in 7 days</small></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="cv-tag">filters</div>
+  <form class="cv-filters" method="get">
+    <div class="qf">
+      <label>Search</label>
+      <input name="q" value="{{ f.q }}" placeholder="CVE-2024-1234, repo or keyword">
+    </div>
+    <div>
+      <label>Year</label>
+      <select name="year">
+        <option value="">All years</option>
+        {% for y in years %}<option value="{{ y }}" {% if f.year == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Severity</label>
+      <select name="severity">
+        <option value="">Any</option>
+        <option value="CRITICAL" {% if f.severity == "CRITICAL" %}selected{% endif %}>Critical</option>
+        <option value="HIGH" {% if f.severity == "HIGH" %}selected{% endif %}>High</option>
+        <option value="MEDIUM" {% if f.severity == "MEDIUM" %}selected{% endif %}>Medium</option>
+        <option value="LOW" {% if f.severity == "LOW" %}selected{% endif %}>Low</option>
+      </select>
+    </div>
+    <div>
+      <label>PoC activity</label>
+      <select name="period">
+        <option value="">Any time</option>
+        <option value="24h" {% if f.period == "24h" %}selected{% endif %}>Last 24 hours</option>
+        <option value="7d" {% if f.period == "7d" %}selected{% endif %}>Last 7 days</option>
+        <option value="30d" {% if f.period == "30d" %}selected{% endif %}>Last 30 days</option>
+        <option value="90d" {% if f.period == "90d" %}selected{% endif %}>Last 90 days</option>
+      </select>
+    </div>
+    <div>
+      <label>Sort by</label>
+      <select name="sort">
+        <option value="" {% if not f.sort %}selected{% endif %}>Default (new first)</option>
+        <option value="latest" {% if f.sort == "latest" %}selected{% endif %}>Latest PoC activity</option>
+        <option value="newest" {% if f.sort == "newest" %}selected{% endif %}>Newest discovered</option>
+        <option value="cvss" {% if f.sort == "cvss" %}selected{% endif %}>Highest CVSS</option>
+        <option value="stars" {% if f.sort == "stars" %}selected{% endif %}>Most stars</option>
+        <option value="pocs" {% if f.sort == "pocs" %}selected{% endif %}>Most PoCs</option>
+        <option value="id" {% if f.sort == "id" %}selected{% endif %}>CVE ID</option>
+      </select>
+    </div>
+    <div>
+      <label>Min stars</label>
+      <input type="number" min="0" name="min_stars" value="{{ f.min_stars }}" placeholder="0">
+    </div>
+    <div>
+      <label>Min PoCs</label>
+      <input type="number" min="0" name="min_pocs" value="{{ f.min_pocs }}" placeholder="0">
+    </div>
+    <input type="hidden" name="label" value="{{ f.label }}">
+    <div class="cv-actions">
+      <button class="cv-btn" type="submit">Scan</button>
+      {% if has_filters %}<a class="cv-btn ghost" href="{% url 'cve_monitor:list' %}">Reset</a>{% endif %}
+    </div>
+  </form>
+
+  <!-- div (not <nav>) so the global nav rules in site.css don't apply -->
+  <div class="cv-chips" role="group" aria-label="Label filter">
+    <a class="cv-chip {% if not f.label and not f.severity %}on{% endif %}" href="{% url 'cve_monitor:list' %}{% if f.q %}?q={{ f.q|urlencode }}{% endif %}">All</a>
+    <a class="cv-chip {% if f.label == 'new' %}on{% endif %}" href="?label=new{% if f.sort %}&sort={{ f.sort }}{% endif %}">New</a>
+    <a class="cv-chip {% if f.label == 'fresh' %}on{% endif %}" href="?label=fresh{% if f.sort %}&sort={{ f.sort }}{% endif %}">Fresh PoC</a>
+    <a class="cv-chip {% if f.label == 'hot' %}on{% endif %}" href="?label=hot{% if f.sort %}&sort={{ f.sort }}{% endif %}">Hot</a>
+    <a class="cv-chip {% if f.label == 'multi' %}on{% endif %}" href="?label=multi{% if f.sort %}&sort={{ f.sort }}{% endif %}">Multi PoC</a>
+    <a class="cv-chip {% if f.severity == 'CRITICAL' %}on{% endif %}" href="?severity=CRITICAL{% if f.sort %}&sort={{ f.sort }}{% endif %}">Critical</a>
+    <a class="cv-chip {% if f.severity == 'HIGH' %}on{% endif %}" href="?severity=HIGH{% if f.sort %}&sort={{ f.sort }}{% endif %}">High</a>
+  </div>
+
+  <p class="cv-count">{{ page.paginator.count }} result{{ page.paginator.count|pluralize }}</p>
+
+  <!-- Results -->
+  {% for c in items %}
+  <article class="cv-card cv-spot cv-rv">
+    <div class="cv-top">
+      <a class="cv-id" href="https://nvd.nist.gov/vuln/detail/{{ c.cve_id }}" target="_blank" rel="noopener">{{ c.cve_id }}</a>
+      <div class="cv-tags">
+        {% for cls, text in c.labels %}<span class="cv-lb {{ cls }}">{{ text }}</span>{% endfor %}
+      </div>
+    </div>
+
+    <div class="cv-meta">
+      {% if c.cvss_score %}<span>CVSS <b class="sev-{{ c.severity|lower }}">{{ c.cvss_score }}</b> {{ c.severity }}</span>{% endif %}
+      {% if c.cwe %}<span>{{ c.cwe }}</span>{% endif %}
+      {% if c.published_at %}<span>Published <b>{{ c.published_at|date:"Y-m-d" }}</b></span>{% endif %}
+      <span>PoCs <b>{{ c.poc_count }}</b></span>
+      <span>&#9733; <b>{{ c.top_stars }}</b></span>
+      {% if c.latest_push %}<span>Last push <b>{{ c.latest_push|date:"Y-m-d" }}</b> ({{ c.latest_push|timesince }} ago)</span>{% endif %}
+      {% if c.discovered_at %}<span>Discovered <b>{{ c.discovered_at|date:"Y-m-d H:i" }}</b></span>{% endif %}
+    </div>
+
+    {% if c.description %}
+    <p class="cv-desc">{{ c.description }}</p>
+    {% else %}
+    <p class="cv-desc pending">Fetching description from NVD&hellip;</p>
+    {% endif %}
+
+    {% if c.top_repo_url %}
+    <div class="cv-toprepo">Top PoC: <a href="{{ c.top_repo_url }}" target="_blank" rel="noopener nofollow">{{ c.top_repo_url }}</a></div>
+    {% endif %}
+
+    {% if c.repos %}
+    <details>
+      <summary>Show {{ c.repos|length }}{% if c.more %} of {{ c.poc_count }}{% endif %} repositories</summary>
+      {% for r in c.repos %}
+      <div class="cv-repo">
+        <div>
+          <a href="{{ r.repo_url }}" target="_blank" rel="noopener nofollow">{{ r.repo_full_name }}</a>
+          {% if r.is_fork %}<span class="cv-fork">fork</span>{% endif %}
+          {% if r.description %}<p>{{ r.description|truncatechars:160 }}</p>{% endif %}
+        </div>
+        <div class="st">&#9733; {{ r.stars }}{% if r.pushed_at %} &middot; {{ r.pushed_at|date:"Y-m-d" }}{% endif %}</div>
+      </div>
+      {% endfor %}
+    </details>
+    {% endif %}
+  </article>
+  {% empty %}
+  <div class="cv-empty">No contacts found. Adjust your filters.</div>
+  {% endfor %}
+
+  {% if page.paginator.num_pages > 1 %}
+  <div class="cv-pager">
+    {% if page.has_previous %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.previous_page_number }}">&lt; Prev</a>{% endif %}
+    <span>Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?{% if qs %}{{ qs }}&{% endif %}page={{ page.next_page_number }}">Next &gt;</a>{% endif %}
+  </div>
+  {% endif %}
+
+  <p class="cv-note">Sources: public PoC repositories on GitHub (nomi-sec/PoC-in-GitHub), descriptions and scores from NVD / CVE.org. Exploit code is third-party; review before running.</p>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; {% now "Y" %} RadvanSec</span>
+  <a href="mailto:info@radvansec.com">info@radvansec.com</a>
+  <a href="{% url 'home' %}#home">cd ~</a>
+</div></footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  var r=document.documentElement;
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* cursor light (used by .grid / .light from site.css) */
+  addEventListener('pointermove',function(e){
+    r.style.setProperty('--mx',e.clientX+'px');r.style.setProperty('--my',e.clientY+'px');
+  },{passive:true});
+
+  /* typed prompt */
+  var el=document.getElementById('prompt'),txt='./cve-monitor --poc --live',i=0;
+  el.innerHTML='<b>root@radvansec</b>:~$ <span id="t"></span><span class="cv-cur"></span>';
+  var t=document.getElementById('t');
+  if(reduce){t.textContent=txt}
+  else{(function type(){t.textContent=txt.slice(0,++i);if(i<txt.length)setTimeout(type,55+Math.random()*60)})()}
+
+  /* place radar blips (deterministic positions from index, golden-angle spread) */
+  document.querySelectorAll('.blip').forEach(function(b){
+    var n=+b.dataset.i, a=n*2.399963, d=22+((n*37)%62);
+    var x=50+Math.cos(a)*d/2, y=50+Math.sin(a)*d/2;
+    b.style.left=x+'%';b.style.top=y+'%';
+    b.style.animationDelay=(-(a%6.283)/6.283*5).toFixed(2)+'s';
+  });
+
+  /* spotlight on cards */
+  document.querySelectorAll('.cv-spot').forEach(function(c){
+    c.addEventListener('pointermove',function(e){
+      var b=c.getBoundingClientRect();
+      c.style.setProperty('--cx',(e.clientX-b.left)+'px');
+      c.style.setProperty('--cy',(e.clientY-b.top)+'px');
+    },{passive:true});
+  });
+
+  /* reveal on scroll */
+  var items=document.querySelectorAll('.cv-rv');
+  if(!('IntersectionObserver' in window)||reduce){items.forEach(function(n){n.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.08});
+  items.forEach(function(n,k){n.style.transitionDelay=(k%4)*50+'ms';io.observe(n)});
+})();
+</script>
+{% endblock %}

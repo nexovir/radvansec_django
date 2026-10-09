@@ -190,13 +190,7 @@ article :not(pre)>code{font-size:.9em !important}
 
 <div class="read-progress" id="readProgress"></div>
 
-<nav><div class="wrap">
-  <a class="brand" href="{% url 'home' %}"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
-  <ul>
-    <li><a href="{% url 'home' %}#home">home</a></li><li><a href="{% url 'home' %}#about">about</a></li><li><a href="{% url 'home' %}#services">services</a></li>
-    <li><a href="{% url 'home' %}#products">products</a></li><li><a href="{% url 'blog:list' %}">blog</a></li><li><a href="{% url 'home' %}#contact">contact</a></li>
-  </ul>
-</div></nav>
+{% include "nav.html" %}
 
 <main class="wrap">
 <article>

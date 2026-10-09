@@ -18,8 +18,14 @@
   --line:rgba(255,255,255,.09);
   --muted:rgba(255,255,255,.62);
   --card:rgba(255,255,255,.03);
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   max-width:1080px;
   margin-inline:auto;
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
 }
 
 /* ---------- Reveal ---------- */
@@ -27,44 +33,46 @@
 .rs-js .rs-rv.in{opacity:1;transform:none}
 
 /* ---------- Shared ---------- */
-.rs-sec{padding:84px 0 !important;margin:0 !important;border:0 !important}
+.rs-sec{padding:72px 0 !important;margin:0 !important;border:0 !important;border-top:1px solid var(--line) !important}
 .rs-tag{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:6px 14px;border-radius:999px;margin-bottom:18px;
-  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--pa);background:var(--pa-soft);border:1px solid rgba(61,220,151,.35);
+  display:inline-block;margin-bottom:14px;
+  font-family:var(--mono) !important;font-size:12px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--pa);
 }
+.rs-tag::before{content:"$ ";opacity:.6}
 .rs-h2{
-  font-size:clamp(28px,4.2vw,42px) !important;line-height:1.15 !important;
-  letter-spacing:-.02em;margin:0 0 36px !important;
+  font-family:var(--sans) !important;font-weight:700 !important;
+  font-size:clamp(26px,3.4vw,36px) !important;line-height:1.2 !important;
+  letter-spacing:-.025em;margin:0 0 32px !important;
   color:#fff !important;background:none !important;
   -webkit-text-fill-color:#fff !important;text-shadow:none !important;
 }
 .rs-btn{
   display:inline-flex;align-items:center;gap:10px;
   padding:13px 22px;border-radius:12px;cursor:pointer;
-  font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;
+  font-family:var(--mono) !important;font-size:14px;font-weight:700;
   text-decoration:none;transition:all .2s;
+  color:#04140c;background:linear-gradient(135deg,#3ddc97,#22d3ee);border:1px solid transparent;
+  box-shadow:0 12px 30px -12px rgba(61,220,151,.6);
 }
-.rs-btn.primary{color:#04140c;background:linear-gradient(135deg,#3ddc97,#22d3ee);border:1px solid transparent;box-shadow:0 12px 30px -12px rgba(61,220,151,.6)}
-.rs-btn.primary:hover{transform:translateY(-2px);box-shadow:0 18px 36px -12px rgba(61,220,151,.75)}
-.rs-btn.ghost{color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.rs-btn:hover{transform:translateY(-2px)}
+.rs-btn.ghost{color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--line);box-shadow:none}
 .rs-btn.ghost:hover{color:var(--pa);border-color:rgba(61,220,151,.5);background:var(--pa-soft)}
 
 /* ---------- Hero ---------- */
 .rs-hero{
-  display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;
-  padding:80px 0 56px;
+  display:grid;grid-template-columns:1fr 1.1fr;gap:16px;align-items:center;
+  padding:56px 0 72px;
 }
 .rs-prompt{
-  font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted);
-  margin-bottom:22px;min-height:22px;
+  font-family:var(--mono) !important;font-size:14px;color:var(--muted);
+  margin-bottom:20px;min-height:22px;
 }
 .rs-prompt b{color:var(--pa);font-weight:700}
 .rs-h1{
-  font-size:clamp(40px,6.4vw,72px) !important;line-height:1.05 !important;
-  letter-spacing:-.035em;font-weight:800;margin:0 0 24px !important;
+  font-family:var(--sans) !important;font-weight:700 !important;
+  font-size:clamp(34px,4.8vw,56px) !important;line-height:1.08 !important;
+  letter-spacing:-.04em;margin:0 0 20px !important;
   color:#fff !important;background:none !important;
   -webkit-text-fill-color:#fff !important;text-shadow:none !important;
 }
@@ -72,237 +80,118 @@
   font-style:normal;color:#000 !important;-webkit-text-fill-color:#000 !important;
   position:relative;white-space:nowrap;
 }
-
 .rs-h1 em::after{
   content:"";position:absolute;left:0;right:0;bottom:.04em;height:.09em;border-radius:4px;
   background:linear-gradient(90deg,#3ddc97,#22d3ee);
 }
 .rs-cur{
-  display:inline-block;width:.5em;height:.08em;margin-left:.12em;
-  background:var(--pa);vertical-align:baseline;animation:rsblink 1s steps(1) infinite;
+  display:inline-block;width:.6em;height:1.1em;margin-left:2px;
+  background:var(--pa);vertical-align:-.2em;animation:rsblink 1s steps(1) infinite;
 }
 @keyframes rsblink{50%{opacity:0}}
 .rs-lead{
-  font-size:19px !important;line-height:1.7 !important;
-  color:var(--muted);max-width:600px;margin:0 0 32px !important;
+  font-family:var(--sans) !important;
+  font-size:18px !important;line-height:1.7 !important;
+  color:var(--muted);max-width:460px;margin:0 0 30px !important;
 }
-.rs-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:38px}
-.rs-points{display:flex;flex-wrap:wrap;gap:10px 22px}
-.rs-points span{
-  display:inline-flex;align-items:center;gap:8px;
-  font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);
-}
-.rs-points span::before{
-  content:"";width:7px;height:7px;border-radius:50%;
-  background:var(--pa);box-shadow:0 0 10px var(--pa);
-}
+.rs-cta{display:flex;flex-wrap:wrap;gap:12px}
 
-/* ---------- Logo: radar + attack ring ---------- */
+/* ---------- Logo: big, one simple ring ---------- */
 .rs-logo{
-  position:relative;width:100%;max-width:540px;aspect-ratio:1;margin-left:auto;
+  position:relative;width:100%;max-width:620px;aspect-ratio:1;margin-left:auto;
   transform:translate(var(--lx,0px),var(--ly,0px));
   transition:transform .15s ease-out;
 }
-.rs-glow,.rs-radar,.rs-sweep,.rs-ring{position:absolute;pointer-events:none}
-.rs-glow,.rs-radar,.rs-sweep{border-radius:50%}
-
-/* glow behind logo */
+.rs-glow,.rs-ring{position:absolute;pointer-events:none;border-radius:50%}
 .rs-glow{
-  inset:18%;
-  background:radial-gradient(circle,rgba(61,220,151,.40),rgba(34,211,238,.10) 55%,transparent 72%);
+  inset:14%;
+  background:radial-gradient(circle,rgba(61,220,151,.35),rgba(34,211,238,.08) 55%,transparent 72%);
   filter:blur(24px);animation:rspulse 4.5s ease-in-out infinite;
 }
-
-/* radar grid: range rings + crosshair */
-.rs-radar{
-  inset:12%;
-  border:1px solid rgba(61,220,151,.40);
-  background:
-    linear-gradient(90deg,transparent calc(50% - .5px),rgba(61,220,151,.22) calc(50% - .5px) calc(50% + .5px),transparent calc(50% + .5px)),
-    linear-gradient(0deg,transparent calc(50% - .5px),rgba(61,220,151,.22) calc(50% - .5px) calc(50% + .5px),transparent calc(50% + .5px)),
-    repeating-radial-gradient(circle closest-side,transparent 0 24.4%,rgba(61,220,151,.20) 24.4% 25%),
-    radial-gradient(circle closest-side,rgba(61,220,151,.07),rgba(61,220,151,.02));
-  box-shadow:inset 0 0 40px rgba(61,220,151,.10),0 0 30px rgba(61,220,151,.08);
+.rs-ring{
+  inset:4%;border:1px dashed rgba(61,220,151,.45);
+  animation:rsspin 60s linear infinite;
 }
-
-/* radar sweep (6s per turn: blips below use the same period) */
-.rs-sweep{
-  inset:12%;
-  background:conic-gradient(from 0deg,transparent 0,transparent 62%,rgba(61,220,151,.34) 99%,rgba(61,220,151,.85) 100%);
-  animation:rsspin 6s linear infinite;
+.rs-ring::after{
+  content:"";position:absolute;top:-5px;left:50%;margin-left:-5px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--pa);box-shadow:0 0 14px var(--pa);
 }
-
-/* vulnerability blips: appear when the sweep reaches their angle (--a) */
-.rs-blip{
-  position:absolute;left:var(--x);top:var(--y);
-  width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
-  background:var(--c);box-shadow:0 0 12px var(--c),0 0 26px var(--c);
-  opacity:0;
-  animation:rsblip 6s linear infinite;
-  animation-delay:calc(var(--a) / 360 * 6s);
-}
-.rs-blip::before{
-  content:"";position:absolute;inset:-1px;border-radius:50%;
-  border:1.5px solid var(--c);
-  animation:rsping 6s linear infinite;
-  animation-delay:calc(var(--a) / 360 * 6s);
-}
-.rs-blip::after{
-  content:attr(data-l);position:absolute;left:16px;top:-3px;white-space:nowrap;
-  font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.08em;
-  color:var(--c);text-shadow:0 0 8px rgba(0,0,0,.8);
-}
-.rs-blip.l::after{left:auto;right:16px}
-@keyframes rsblip{
-  0%{opacity:0;transform:scale(.4)}
-  2%{opacity:1;transform:scale(1.5)}
-  7%{transform:scale(1)}
-  65%{opacity:.75}
-  100%{opacity:0}
-}
-@keyframes rsping{
-  0%{transform:scale(1);opacity:.9}
-  22%{transform:scale(3.4);opacity:0}
-  100%{transform:scale(3.4);opacity:0}
-}
-
-/* rotating attack-name rings (SVG text on a circle) */
-.rs-ring{inset:0;width:100%;height:100%;overflow:visible;animation:rsspin 70s linear infinite}
-.rs-ring.r2{inset:6%;width:88%;height:88%;animation-duration:90s;animation-direction:reverse}
-.rs-ring text{font-family:'JetBrains Mono',monospace;font-weight:700}
-.rs-ring.r1 text{font-size:7.4px;fill:#3ddc97}
-.rs-ring.r2 text{font-size:5.6px;fill:#22d3ee;opacity:.75}
-.rs-ring circle{fill:none}
-
-/* the logo */
 .rs-logo img{
-  position:absolute;inset:0;margin:auto;width:54%;height:auto;display:block;
+  position:absolute;inset:0;margin:auto;width:68%;height:auto;display:block;
   filter:drop-shadow(0 0 18px rgba(61,220,151,.55)) drop-shadow(0 0 48px rgba(34,211,238,.30));
   animation:rsfloat 6s ease-in-out infinite;
   transition:transform .4s cubic-bezier(.2,.8,.2,1);
 }
-.rs-logo:hover img{transform:scale(1.06) rotate(-2deg)}
-
+.rs-logo:hover img{transform:scale(1.05)}
 @keyframes rsspin{to{transform:rotate(360deg)}}
 @keyframes rsfloat{0%,100%{translate:0 -6px}50%{translate:0 8px}}
-@keyframes rspulse{0%,100%{opacity:.65;transform:scale(.95)}50%{opacity:1;transform:scale(1.08)}}
-
-/* ---------- Ticker ---------- */
-.rs-ticker{
-  overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  padding:14px 0;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-}
-.rs-ticker-in{display:flex;width:max-content;animation:rsscroll 42s linear infinite}
-.rs-ticker span{
-  font-family:'JetBrains Mono',monospace;font-size:12.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);white-space:nowrap;padding:0 22px;
-}
-.rs-ticker span::after{content:"/";margin-left:44px;color:rgba(61,220,151,.5)}
-@keyframes rsscroll{to{transform:translateX(-50%)}}
-
-/* ---------- About ---------- */
-.rs-about{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:start}
-.rs-about p{font-size:17px !important;line-height:1.85 !important;color:var(--muted);margin:0 0 18px !important}
-.rs-facts{
-  border:1px solid var(--line);border-radius:18px;background:var(--card);overflow:hidden;
-  font-family:'JetBrains Mono',monospace;
-}
-.rs-facts div{
-  display:flex;justify-content:space-between;gap:16px;
-  padding:15px 20px;font-size:13.5px;color:#fff;border-bottom:1px solid var(--line);
-}
-.rs-facts div:last-child{border-bottom:0}
-.rs-facts span{color:var(--pa);text-transform:uppercase;letter-spacing:.1em;font-size:11.5px;padding-top:2px}
+@keyframes rspulse{0%,100%{opacity:.65;transform:scale(.95)}50%{opacity:1;transform:scale(1.06)}}
 
 /* ---------- Services ---------- */
-.rs-svcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.rs-svcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .rs-svc{
-  position:relative;display:flex;flex-direction:column;gap:10px;overflow:hidden;
-  padding:26px 24px 24px;border-radius:18px;
-  border:1px solid var(--line);background:var(--card);color:#fff;text-decoration:none;
+  position:relative;display:flex;flex-direction:column;gap:8px;overflow:hidden;
+  padding:24px 22px;border-radius:16px;
+  border:1px solid var(--line);background:var(--card);color:#fff;
   transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s;
 }
 .rs-svc::before{
   content:"";position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s;
   background:radial-gradient(360px circle at var(--cx,50%) var(--cy,50%),rgba(61,220,151,.16),transparent 60%);
 }
-.rs-svc:hover{transform:translateY(-4px);border-color:rgba(61,220,151,.45)}
+.rs-svc:hover{transform:translateY(-3px);border-color:rgba(61,220,151,.45)}
 .rs-svc:hover::before{opacity:1}
-.rs-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--pa);letter-spacing:.1em}
-.rs-svc h3{font-size:19px !important;line-height:1.3 !important;margin:0 !important;color:#fff !important;text-shadow:none !important}
-.rs-svc p{font-size:15px !important;line-height:1.7 !important;margin:0 !important;color:var(--muted)}
-.rs-svc .go{
-  margin-top:auto;padding-top:10px;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--pa);
-  transition:transform .2s;
+.rs-num{font-family:var(--mono) !important;font-size:12px;font-weight:700;color:var(--pa);letter-spacing:.1em}
+.rs-svc h3{
+  font-family:var(--sans) !important;font-weight:600 !important;
+  font-size:18px !important;line-height:1.3 !important;letter-spacing:-.01em;
+  margin:0 !important;color:#fff !important;text-shadow:none !important
 }
-.rs-svc:hover .go{transform:translateX(4px)}
+.rs-svc p{
+  font-family:var(--sans) !important;
+  font-size:15px !important;line-height:1.6 !important;margin:0 !important;color:var(--muted)
+}
 
 /* ---------- Blog ---------- */
-.rs-posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.rs-posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
 .rs-post{
-  display:flex;flex-direction:column;overflow:hidden;border-radius:18px;
+  display:flex;flex-direction:column;overflow:hidden;border-radius:16px;
   border:1px solid var(--line);background:var(--card);color:#fff;text-decoration:none;
-  transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s;
 }
-.rs-post:hover{transform:translateY(-4px);border-color:rgba(61,220,151,.45);box-shadow:0 24px 48px -28px rgba(61,220,151,.35)}
+.rs-post:hover{transform:translateY(-3px);border-color:rgba(61,220,151,.45)}
 .rs-cover{aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(61,220,151,.18),rgba(34,211,238,.10))}
-.rs-cover img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-.rs-post:hover .rs-cover img{transform:scale(1.04)}
-.rs-pbody{display:flex;flex-direction:column;gap:11px;padding:18px 20px 20px;flex:1}
-.rs-chips{display:flex;flex-wrap:wrap;gap:8px}
-.rs-chip{
-  padding:4px 11px;border-radius:999px;
-  font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500;
-  color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);
+.rs-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.rs-pbody{display:flex;flex-direction:column;gap:10px;padding:16px 18px 18px;flex:1}
+.rs-meta{font-family:var(--mono) !important;font-size:11.5px;color:var(--pa)}
+.rs-post h3{
+  font-family:var(--sans) !important;font-weight:600 !important;
+  font-size:18px !important;line-height:1.35 !important;letter-spacing:-.01em;
+  margin:0 !important;color:#fff !important;text-shadow:none !important
 }
-.rs-chip.accent{color:var(--pa);background:var(--pa-soft);border-color:rgba(61,220,151,.35)}
-.rs-post h3{font-size:19px !important;line-height:1.35 !important;margin:0 !important;color:#fff !important;text-shadow:none !important;transition:color .2s}
 .rs-post:hover h3{color:var(--pa) !important}
 .rs-post p{
-  font-size:14.5px !important;line-height:1.7 !important;margin:0 !important;color:var(--muted);
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  font-family:var(--sans) !important;
+  font-size:15px !important;line-height:1.6 !important;margin:0 !important;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
-.rs-more{margin-top:30px}
-
-/* ---------- Contact ---------- */
-.rs-contact{
-  position:relative;overflow:hidden;text-align:center;
-  padding:64px 28px;border-radius:24px;
-  border:1px solid rgba(61,220,151,.3);
-  background:
-    radial-gradient(600px circle at 50% 0%,rgba(61,220,151,.14),transparent 70%),
-    var(--card);
-}
-.rs-contact .rs-h2{margin-bottom:22px !important}
-.rs-mail{
-  display:inline-block;margin-bottom:28px;
-  font-family:'JetBrains Mono',monospace;font-size:clamp(18px,3.4vw,28px);font-weight:700;
-  color:var(--pa);text-decoration:none;border-bottom:2px solid rgba(61,220,151,.35);
-  padding-bottom:4px;transition:border-color .2s;
-}
-.rs-mail:hover{border-color:var(--pa)}
-.rs-contact .rs-cta{justify-content:center;margin:0}
+.rs-more{margin-top:26px}
 
 /* ---------- Responsive ---------- */
 @media (max-width:900px){
-  .rs-hero{grid-template-columns:1fr;padding-top:60px}
-  .rs-logo{max-width:340px;margin:0 auto;order:-1}
-  .rs-about{grid-template-columns:1fr}
+  .rs-hero{grid-template-columns:1fr;padding-top:40px}
+  .rs-logo{max-width:420px;margin:0 auto;order:-1}
   .rs-svcs{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:600px){
-  .rs-sec{padding:60px 0 !important}
+  .rs-sec{padding:52px 0 !important}
   .rs-svcs{grid-template-columns:1fr}
-  .rs-lead{font-size:17px !important}
-  .rs-contact{padding:44px 20px}
-  .rs-logo{max-width:300px}
+  .rs-logo{max-width:320px}
+  .rs-lead{font-size:16px !important}
 }
 @media (prefers-reduced-motion:reduce){
-  .rs-ticker-in,.rs-ring,.rs-sweep,.rs-glow,.rs-logo img,.rs-cur{animation:none}
-  .rs-blip{animation:none;opacity:.9}
-  .rs-blip::before{display:none}
+  .rs-ring,.rs-glow,.rs-logo img,.rs-cur{animation:none}
   .rs-js .rs-rv{opacity:1;transform:none;transition:none}
 }
 </style>
@@ -311,19 +200,7 @@
 {% block body %}
 <div class="grid"></div><div class="light"></div><div class="scan"></div>
 
-<nav><div class="wrap">
-  <a class="brand" href="{% url 'home' %}#home"><img src="{% static 'img/logo.png' %}" alt="">RadvanSec</a>
-  <ul>
-    <li><a href="{% url 'home' %}#home">home</a></li><li><a href="{% url 'home' %}#about">about</a></li><li><a href="{% url 'home' %}#services">services</a></li>
-    <li><a href="{% url 'blog:list' %}">blog</a></li><li><a href="{% url 'home' %}#contact">contact</a></li><li class="rs-nav-login">
-  {% if user.is_authenticated %}
-    <a href="{% url 'dashboard' %}">dashboard</a>
-  {% else %}
-    <a href="{% url 'account_login' %}">login</a>
-  {% endif %}
-</li>
-  </ul>
-</div></nav>
+{% include "nav.html" %}
 
 <main class="wrap rs" id="home">
 
@@ -331,75 +208,19 @@
   <div class="rs-hero">
     <div>
       <div class="rs-prompt" id="prompt" aria-hidden="true"></div>
-      <h1 class="rs-h1">We break in<br>so <em>they can't</em>.<span class="rs-cur"></span></h1>
-      <p class="rs-lead">RadvanSec finds the weaknesses in your applications, networks and people before an attacker does, and shows you exactly how to close them.</p>
+      <h1 class="rs-h1">We break in<br>so <em>they can't</em>.</h1>
+      <p class="rs-lead">We find the weaknesses in your apps, networks and people before an attacker does.</p>
       <div class="rs-cta">
-        <a class="rs-btn primary" href="#contact">Book a security assessment</a>
-        <a class="rs-btn ghost" href="#services">See what we test</a>
-      </div>
-      <div class="rs-points">
-        <span>manual testing</span>
-        <span>evidence for every finding</span>
-        <span>report + retest</span>
+        <a class="rs-btn" href="#services">See what we test</a>
       </div>
     </div>
 
-    <!-- Logo with radar + attack ring -->
     <div class="rs-logo" id="logo">
       <div class="rs-glow"></div>
-
-      <svg class="rs-ring r1" viewBox="0 0 200 200" aria-hidden="true">
-        <defs><path id="rsp1" d="M100,100 m-96,0 a96,96 0 1,1 192,0 a96,96 0 1,1 -192,0"/></defs>
-        <circle cx="100" cy="100" r="99.5" stroke="rgba(61,220,151,.28)" stroke-width=".6"/>
-        <text><textPath href="#rsp1" textLength="600" lengthAdjust="spacing">SQLI · XSS · RCE · SSRF · IDOR · CSRF · XXE · LFI · </textPath></text>
-      </svg>
-
-      <svg class="rs-ring r2" viewBox="0 0 200 200" aria-hidden="true">
-        <defs><path id="rsp2" d="M100,100 m-96,0 a96,96 0 1,1 192,0 a96,96 0 1,1 -192,0"/></defs>
-        <circle cx="100" cy="100" r="99.5" stroke="rgba(34,211,238,.30)" stroke-width=".6" stroke-dasharray="1 4"/>
-        <text><textPath href="#rsp2" textLength="600" lengthAdjust="spacing">22 OPEN · 443 OPEN · 3389 FILTERED · 8080 OPEN · 445 OPEN · 6379 OPEN · </textPath></text>
-      </svg>
-
-      <div class="rs-radar"></div>
-      <div class="rs-sweep"></div>
-
-      <span class="rs-blip"   data-l="CVE"  style="--a:40;  --x:71.9%; --y:23.9%; --c:#ff5d73"></span>
-      <span class="rs-blip"   data-l="RCE"  style="--a:110; --x:81%;   --y:61.3%; --c:#ffb454"></span>
-      <span class="rs-blip l" data-l="SQLi" style="--a:200; --x:38%;   --y:82.9%; --c:#ff5d73"></span>
-      <span class="rs-blip l" data-l="IDOR" style="--a:265; --x:18.1%; --y:52.8%; --c:#ffb454"></span>
-      <span class="rs-blip l" data-l="XSS"  style="--a:325; --x:31.1%; --y:23%;   --c:#ff5d73"></span>
-
+      <div class="rs-ring"></div>
       <img src="{% static 'img/logo.png' %}" alt="RadvanSec logo">
     </div>
   </div>
-
-  <!-- Ticker -->
-  <div class="rs-ticker" aria-hidden="true">
-    <div class="rs-ticker-in">
-      <span>web</span><span>mobile</span><span>api</span><span>internal network</span><span>aws</span><span>azure</span><span>gcp</span><span>kubernetes</span><span>authentication</span><span>access control</span><span>business logic</span>
-      <span>web</span><span>mobile</span><span>api</span><span>internal network</span><span>aws</span><span>azure</span><span>gcp</span><span>kubernetes</span><span>authentication</span><span>access control</span><span>business logic</span>
-    </div>
-  </div>
-
-  <!-- About -->
-  <section class="rs-sec" id="about">
-    <div class="rs-rv">
-      <div class="rs-tag">about</div>
-      <h2 class="rs-h2">Offensive security, done by hand.</h2>
-    </div>
-    <div class="rs-about rs-rv">
-      <div>
-        <p>RadvanSec is a security team that attacks systems the way real adversaries do: patiently, manually and with a clear goal. We do not hand you scanner output. We show you what an attacker could actually reach.</p>
-        <p>Every finding comes with evidence, a risk rating and a fix your engineers can apply the same day.</p>
-      </div>
-      <div class="rs-facts">
-        <div><span>focus</span>offensive security</div>
-        <div><span>method</span>manual testing</div>
-        <div><span>delivery</span>report + retest</div>
-        <div><span>contact</span>info@radvansec.com</div>
-      </div>
-    </div>
-  </section>
 
   <!-- Services -->
   <section class="rs-sec" id="services">
@@ -408,12 +229,12 @@
       <h2 class="rs-h2">What we test</h2>
     </div>
     <div class="rs-svcs">
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">01</span><h3>Penetration testing</h3><p>Web, mobile, API and internal network tests that chain real vulnerabilities into real impact.</p><span class="go">&gt;</span></a>
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">02</span><h3>Red team operations</h3><p>Goal-based attack simulations that test your people, processes and detection together.</p><span class="go">&gt;</span></a>
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">03</span><h3>Cloud and infrastructure</h3><p>Configuration and architecture reviews for AWS, Azure, GCP and Kubernetes.</p><span class="go">&gt;</span></a>
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">04</span><h3>Code and design review</h3><p>Find flaws in authentication, access control and business logic before release.</p><span class="go">&gt;</span></a>
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">05</span><h3>Incident response</h3><p>Containment, forensics and recovery support when something has already gone wrong.</p><span class="go">&gt;</span></a>
-      <a class="rs-svc rs-spot rs-rv" href="#contact"><span class="rs-num">06</span><h3>Security training</h3><p>Practical workshops for developers and teams, built around attacks they will actually see.</p><span class="go">&gt;</span></a>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">01</span><h3>Penetration testing</h3><p>Web, mobile, API and network.</p></div>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">02</span><h3>Red team</h3><p>Real attack simulations.</p></div>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">03</span><h3>Cloud</h3><p>AWS, Azure, GCP, Kubernetes.</p></div>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">04</span><h3>Code review</h3><p>Find flaws before release.</p></div>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">05</span><h3>Incident response</h3><p>Help when things go wrong.</p></div>
+      <div class="rs-svc rs-spot rs-rv"><span class="rs-num">06</span><h3>Training</h3><p>Hands-on workshops for teams.</p></div>
     </div>
   </section>
 
@@ -422,7 +243,7 @@
   <section class="rs-sec" id="blog">
     <div class="rs-rv">
       <div class="rs-tag">blog</div>
-      <h2 class="rs-h2">Notes from the field</h2>
+      <h2 class="rs-h2">Latest posts</h2>
     </div>
     <div class="rs-posts">
       {% for post in latest_posts %}
@@ -431,10 +252,7 @@
         <div class="rs-cover"><img src="{{ post.poster.url }}" alt="" loading="lazy"></div>
         {% endif %}
         <div class="rs-pbody">
-          <div class="rs-chips">
-            <span class="rs-chip accent">{{ post.read_minutes }} min read</span>
-            <span class="rs-chip">{{ post.published_at|date:"M d, Y" }}</span>
-          </div>
+          <div class="rs-meta">{{ post.published_at|date:"M d, Y" }} · {{ post.read_minutes }} min</div>
           <h3>{{ post.title }}</h3>
           <p>{{ post.summary }}</p>
         </div>
@@ -447,22 +265,11 @@
   </section>
   {% endif %}
 
-  <!-- Contact -->
-  <section class="rs-sec" id="contact">
-    <div class="rs-contact rs-rv">
-      <div class="rs-tag">contact</div>
-      <h2 class="rs-h2">Tell us what you need to protect.</h2>
-      <a class="rs-mail" href="mailto:info@radvansec.com">info@radvansec.com</a>
-      <div class="rs-cta">
-        <a class="rs-btn primary" href="mailto:info@radvansec.com">Book a security assessment</a>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer><div class="wrap">
-  <span>&copy; {% now "Y" %} RadvanSec. All rights reserved.</span>
+  <span>&copy; {% now "Y" %} RadvanSec</span>
+  <a href="mailto:info@radvansec.com">info@radvansec.com</a>
   <a href="{% url 'home' %}#home">cd ~</a>
 </div></footer>
 {% endblock %}
@@ -482,7 +289,7 @@
 
   /* typed prompt */
   var el=document.getElementById('prompt'),txt='./assess --target your-company',i=0;
-  el.innerHTML='<b>root@radvansec</b>:~$ <span id="t"></span>';
+  el.innerHTML='<b>root@radvansec</b>:~$ <span id="t"></span><span class="rs-cur"></span>';
   var t=document.getElementById('t');
   if(reduce){t.textContent=txt}
   else{(function type(){t.textContent=txt.slice(0,++i);if(i<txt.length)setTimeout(type,55+Math.random()*60)})()}
